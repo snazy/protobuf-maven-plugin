@@ -1,10 +1,8 @@
-[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/xolstice/protobuf-maven-plugin/master/LICENSE)
-[![Maven Central](https://img.shields.io/maven-central/v/org.xolstice.maven.plugins/protobuf-maven-plugin.svg)](https://repo1.maven.org/maven2/org/xolstice/maven/plugins/protobuf-maven-plugin/)
-[![Bintray](https://img.shields.io/bintray/v/xolstice/maven/protobuf-maven-plugin.svg)](https://bintray.com/xolstice/maven/protobuf-maven-plugin/)
-[![Build Status](https://travis-ci.com/xolstice/protobuf-maven-plugin.svg?branch=master)](https://travis-ci.com/xolstice/protobuf-maven-plugin)
-[![Build status](https://ci.appveyor.com/api/projects/status/u8mxkjcs1xl1s3om/branch/master?svg=true)](https://ci.appveyor.com/project/xolstice/protobuf-maven-plugin/branch/master)
-[![Known Vulnerabilities](https://snyk.io/test/github/xolstice/protobuf-maven-plugin/badge.svg)](https://snyk.io/test/github/xolstice/protobuf-maven-plugin)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4070/badge)](https://bestpractices.coreinfrastructure.org/projects/4070)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/projectnessie/protobuf-maven-plugin/master/LICENSE)
+
+# NOTE! This is a fork!
+
+_**This is a fork of [xolstice/protobuf-maven-plugin](https://github.com/xolstice/protobuf-maven-plugin/)**_
 
 # Maven Protocol Buffers Plugin
 

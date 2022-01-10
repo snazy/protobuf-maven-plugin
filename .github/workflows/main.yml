@@ -1,0 +1,100 @@
+name: Main CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  java:
+    name: Java/Maven
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        include:
+          - java-version: 8
+          - java-version: 11
+          - java-version: 17
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 8
+      - name: Set up Maven toolchains.xml
+        shell: bash
+        run: |
+          echo "${JAVA_HOME}"
+
+          mkdir -p ${HOME}/.m2
+          cat << 'EOT' > ${HOME}/.m2/toolchains.xml
+          <?xml version="1.0" encoding="UTF8"?>
+          <toolchains>
+            <toolchain>
+             <type>jdk</type>
+             <provides>
+               <version>11</version>
+               <vendor>zulu</vendor>
+             </provides>
+             <configuration>
+               <jdkHome>${env.JAVA_HOME}</jdkHome>
+             </configuration>
+            </toolchain>
+            <toolchain>
+              <type>protobuf</type>
+              <provides>
+                <version>3.4.0</version>
+              </provides>
+              <configuration>
+                <protocExecutable>
+                  ${HOME}/.m2/repository/com/google/protobuf/protoc/3.4.0/protoc-3.4.0-linux-x86_64.exe
+                </protocExecutable>
+              </configuration>
+            </toolchain>
+            <toolchain>
+              <type>protobuf</type>
+              <provides>
+                <version>3.11.1</version>
+              </provides>
+              <configuration>
+                <protocExecutable>
+                  ${HOME}/.m2/repository/com/google/protobuf/protoc/3.11.1/protoc-3.11.1-linux-x86_64.exe
+                </protocExecutable>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOT
+      - name: Setup Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v2
+        if: ${{ matrix.java-version != 8 }}
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java-version }}
+      - name: Versions
+        run: |
+          java -version
+          git --version
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/projectnessie
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Download dependencies
+        run: |
+          # Download all dependencies that integration tests might need later
+          ./mvnw -B -V -Dstyle.color=always dependency:go-offline -f src/it/dependencies/pom.xml -P protoc-3.4.0
+          ./mvnw -B -V -Dstyle.color=always dependency:go-offline -f src/it/dependencies/pom.xml -P protoc-3.11.1
+          ./mvnw -B -V -Dstyle.color=always dependency:go-offline -P run-its
+
+          # These protoc executables were downloaded in the previous phase and are being referenced in toolchains.xml
+          chmod +x $HOME/.m2/repository/com/google/protobuf/protoc/3.4.0/protoc-3.4.0-linux-x86_64.exe
+          chmod +x $HOME/.m2/repository/com/google/protobuf/protoc/3.11.1/protoc-3.11.1-linux-x86_64.exe
+      - name: Build and test
+        run: ./mvnw -B -V -Dstyle.color=always clean verify -P run-its -Dinvoker.streamLogs=true

@@ -39,10 +39,10 @@
         <java.compiler.source>${java.sdk.version}</java.compiler.source>
         <java.compiler.target>${java.sdk.version}</java.compiler.target>
 
-        <mavenVersion>3.3.9</mavenVersion>
-        <plexusComponentVersion>2.1.0</plexusComponentVersion>
-        <plexusUtilsVersion>3.3.0</plexusUtilsVersion>
-        <pluginToolsVersion>3.6.0</pluginToolsVersion>
+        <mavenVersion>3.8.4</mavenVersion>
+        <plexusComponentVersion>2.1.1</plexusComponentVersion>
+        <plexusUtilsVersion>3.4.1</plexusUtilsVersion>
+        <pluginToolsVersion>3.6.2</pluginToolsVersion>
 
         <goalPrefix>protobuf</goalPrefix>
     </properties>
@@ -53,7 +53,7 @@
 
     <organization>
         <name>Maven Protocol Buffers Plugin Authors</name>
-        <url>https://github.com/xolstice/protobuf-maven-plugin/blob/master/AUTHORS</url>
+        <url>https://github.com/projectnessie/protobuf-maven-plugin/blob/master/AUTHORS</url>
     </organization>
 
     <licenses>
@@ -77,9 +77,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/xolstice/protobuf-maven-plugin</url>
-        <connection>scm:git:git://github.com/xolstice/protobuf-maven-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/xolstice/protobuf-maven-plugin.git</developerConnection>
+        <url>https://github.com/projectnessie/protobuf-maven-plugin</url>
+        <connection>scm:git:git://github.com/projectnessie/protobuf-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/projectnessie/protobuf-maven-plugin.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -91,18 +91,17 @@
                 The actual site deployment is done by GitHub site-maven-plugin, so the URL here is not used.
             -->
             <id>gh-pages</id>
-            <url>https://github.com/xolstice/protobuf-maven-plugin/tree/gh-pages</url>
+            <url>https://github.com/projectnessie/protobuf-maven-plugin/tree/gh-pages</url>
         </site>
         <repository>
-            <id>bintray</id>
-            <name>Releases on Bintray</name>
-            <url>https://api.bintray.com/maven/xolstice/maven/protobuf-maven-plugin</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/xolstice/protobuf-maven-plugin/issues/</url>
+        <url>https://github.com/projectnessie/protobuf-maven-plugin/issues/</url>
     </issueManagement>
 
     <build>
@@ -118,7 +117,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0-M3</version>
+                    <version>3.0.0</version>
                 </plugin>
 
                 <plugin>
@@ -130,7 +129,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.2</version>
                 </plugin>
 
                 <plugin>
@@ -142,7 +141,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                 </plugin>
 
                 <plugin>
@@ -160,19 +159,19 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.0</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>2.8.1</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.2.1</version>
                 </plugin>
 
                 <plugin>
@@ -197,7 +196,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.8.2</version>
+                    <version>3.10.0</version>
                 </plugin>
 
                 <plugin>
@@ -215,13 +214,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.0.0-M5</version>
                 </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.0.0-M2</version>
                 </plugin>
 
             </plugins>
@@ -459,7 +458,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.2</version>
                 <configuration>
                     <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
                 </configuration>
@@ -468,7 +467,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.6.0</version>
                 <configuration>
                     <mojoDependencies />
                     <goalPrefix>${goalPrefix}</goalPrefix>
@@ -478,7 +476,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
                 <configuration>
                     <minmemory>128m</minmemory>
                     <maxmemory>512m</maxmemory>
@@ -506,7 +503,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.7</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -635,6 +631,7 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>${mavenVersion}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.plexus</groupId>
@@ -650,6 +647,7 @@
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>${pluginToolsVersion}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.maven</groupId>
@@ -682,6 +680,7 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
             <version>${mavenVersion}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.plexus</groupId>
@@ -701,6 +700,7 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
             <version>${mavenVersion}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.plexus</groupId>
@@ -712,6 +712,7 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
             <version>${mavenVersion}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.plexus</groupId>
