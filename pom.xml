@@ -35,7 +35,7 @@
         <mavenVersion>3.8.3</mavenVersion>
         <plexusComponentVersion>2.1.1</plexusComponentVersion>
         <plexusUtilsVersion>3.4.1</plexusUtilsVersion>
-        <pluginToolsVersion>3.6.2</pluginToolsVersion>
+        <pluginToolsVersion>3.6.4</pluginToolsVersion>
 
         <goalPrefix>protobuf</goalPrefix>
     </properties>
