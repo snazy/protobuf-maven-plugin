@@ -32,7 +32,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <mavenVersion>3.8.3</mavenVersion>
+        <mavenVersion>3.8.4</mavenVersion>
         <plexusComponentVersion>2.1.1</plexusComponentVersion>
         <plexusUtilsVersion>3.4.1</plexusUtilsVersion>
         <pluginToolsVersion>3.6.2</pluginToolsVersion>
