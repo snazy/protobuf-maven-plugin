@@ -17,6 +17,7 @@ package org.xolstice.maven.plugin.protobuf;
  */
 
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.CommandLineUtils.StringStreamConsumer;
@@ -29,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.codehaus.plexus.util.StringUtils.join;
 
@@ -220,34 +222,33 @@ final class Protoc {
      */
     public int execute(final Log log) throws CommandLineException, InterruptedException {
         final Commandline cl = new Commandline();
-        cl.setExecutable(executable);
-        String[] args = buildProtocCommand().toArray(new String[] {});
+
+        List<String> args = new ArrayList<>();
         if (useArgumentFile) {
             try {
-                File argumentsFile = createFileWithArguments(args);
+                File argumentsFile = createFileWithArguments(buildProtocCommand().toArray(new String[] {}));
                 log.debug(LOG_PREFIX + "Using arguments file " + argumentsFile.getPath());
-                cl.addArguments(new String[] {"@" + argumentsFile.getAbsolutePath()});
+                args.add("@" + argumentsFile.getAbsolutePath());
             } catch (final IOException e) {
                 throw new CommandLineException("Error creating file with protoc arguments", e);
             }
         } else {
-            cl.addArguments(args);
+            args.addAll(buildProtocCommand());
         }
-        // There is a race condition in JDK that may sporadically prevent process creation on Linux
-        // https://bugs.openjdk.java.net/browse/JDK-8068370
-        // In order to mitigate that, retry up to 2 more times before giving up
-        int attemptsLeft = 3;
-        while (true) {
-            try {
-                return CommandLineUtils.executeCommandLine(cl, null, output, error);
-            } catch (CommandLineException e) {
-                if (--attemptsLeft == 0 || e.getCause() == null) {
-                    throw e;
-                }
-                log.warn(LOG_PREFIX + "Unable to invoke protoc, will retry " + attemptsLeft + " time(s)", e);
-                Thread.sleep(1000L);
-            }
+
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            cl.setExecutable(executable);
+            cl.addArguments(args.toArray(new String[0]));
+        } else {
+            args.add(0, executable);
+            cl.setExecutable("/bin/sh");
+            cl.addArguments(new String[] {
+                "-c",
+                args.stream().map(arg -> "'" + arg + "'").collect(Collectors.joining(" "))
+            });
         }
+
+        return CommandLineUtils.executeCommandLine(cl, null, output, error);
     }
 
     /**
