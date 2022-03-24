@@ -46,8 +46,8 @@
     </prerequisites>
 
     <organization>
-        <name>Maven Protocol Buffers Plugin Authors</name>
-        <url>https://github.com/projectnessie/protobuf-maven-plugin/blob/master/AUTHORS</url>
+        <name>Maven Protocol Buffers Plugin Caffinitas fork</name>
+        <url>https://github.com/snazy/protobuf-maven-plugin/</url>
     </organization>
 
     <licenses>
