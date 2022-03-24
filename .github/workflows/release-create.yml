@@ -79,7 +79,7 @@ jobs:
     # Record the release-version in git and add the git tag for the release.
     - name: Record ${{ github.event.inputs.releaseVersion }} release in git
       run: |
-        git commit -a -m "[release] release protobuf-maven-${RELEASE_VERSION}"
+        git commit -a -m "[release] release ${GIT_TAG}"
         git tag -f ${GIT_TAG}
 
     # Update versions in pom's to next development iteration
