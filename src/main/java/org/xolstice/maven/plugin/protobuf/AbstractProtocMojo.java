@@ -221,6 +221,19 @@ abstract class AbstractProtocMojo extends AbstractMojo {
     private String protocArtifact;
 
     /**
+     * Whether to use the shared repository for binary executables.
+     * The same binary, for example the resolved {@code protoc} binary, will only be copied
+     * and made executable once and kept around in this directory.
+     * Defaults to {@code true}, means to use the shared repository.
+     */
+    @Parameter(
+            required = false,
+            property = "useProtocBinaryRepository",
+            defaultValue = "true"
+    )
+    private boolean useProtocBinaryRepository;
+
+    /**
      * Additional source paths for {@code .proto} definitions.
      */
     @Parameter(
@@ -1012,25 +1025,55 @@ abstract class AbstractProtocMojo extends AbstractMojo {
         } else {
             targetFileName = sourceFileName;
         }
-        final File targetFile = new File(protocPluginDirectory, targetFileName);
+
+        File repositoryDirectory = protocPluginDirectory;
+        if (useProtocBinaryRepository) {
+            File repoBaseDir;
+            for (MavenProject p = project; ; p = p.getParent()) {
+                repoBaseDir = p.getBasedir();
+                if (!p.hasParent()) {
+                    break;
+                }
+            }
+            repositoryDirectory = new File(repoBaseDir, ".mvn/protobuf-binaries");
+            getLog().info("Using shared repository for protobuf binaries: " + repositoryDirectory);
+        } else {
+            getLog().warn("Consider setting 'useProtocBinaryRepository' to 'true' to avoid sporadic build failures on Linux.");
+        }
+
+        final File targetFile = new File(repositoryDirectory, targetFileName);
         if (targetFile.exists()) {
             // The file must have already been copied in a prior plugin execution/invocation
             getLog().debug("Executable file already exists: " + targetFile.getAbsolutePath());
             return targetFile;
         }
         try {
-            FileUtils.forceMkdir(protocPluginDirectory);
+            FileUtils.forceMkdir(repositoryDirectory);
         } catch (final IOException e) {
-            throw new MojoInitializationException("Unable to create directory " + protocPluginDirectory, e);
+            throw new MojoInitializationException("Unable to create directory " + repositoryDirectory, e);
+        }
+
+        final File copyTempFile;
+        try {
+            copyTempFile = File.createTempFile("protoc", ".tmp", repositoryDirectory);
+        } catch (final IOException e) {
+            throw new MojoInitializationException("Unable to copy the protoc binary to " + repositoryDirectory, e);
         }
         try {
-            FileUtils.copyFile(sourceFile, targetFile);
+            FileUtils.copyFile(sourceFile, copyTempFile);
         } catch (final IOException e) {
-            throw new MojoInitializationException("Unable to copy the file to " + protocPluginDirectory, e);
+            throw new MojoInitializationException("Unable to copy the protoc binary to " + repositoryDirectory, e);
         }
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
-            targetFile.setExecutable(true);
+            copyTempFile.setExecutable(true);
         }
+
+        if (!targetFile.exists()) {
+            // safe to ignore the return value
+            copyTempFile.renameTo(targetFile);
+        }
+        // Delete the temp file, if it still exists. A "copy race" may have happened.
+        copyTempFile.delete();
 
         if (getLog().isDebugEnabled()) {
             getLog().debug("Executable file: " + targetFile.getAbsolutePath());

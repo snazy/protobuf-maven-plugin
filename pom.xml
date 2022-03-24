@@ -31,8 +31,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>8</maven.compiler.release>
 
-        <mavenVersion>3.8.4</mavenVersion>
+        <mavenVersion>3.8.3</mavenVersion>
+        <mavenVersion.build>3.8.5</mavenVersion.build>
         <plexusComponentVersion>2.1.1</plexusComponentVersion>
         <plexusUtilsVersion>3.4.1</plexusUtilsVersion>
         <pluginToolsVersion>3.6.4</pluginToolsVersion>
@@ -617,7 +619,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>${mavenVersion}</version>
+            <version>${mavenVersion.build}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -666,7 +668,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
-            <version>${mavenVersion}</version>
+            <version>${mavenVersion.build}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -686,7 +688,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-            <version>${mavenVersion}</version>
+            <version>${mavenVersion.build}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -698,7 +700,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
-            <version>${mavenVersion}</version>
+            <version>${mavenVersion.build}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
