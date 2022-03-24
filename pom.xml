@@ -71,9 +71,9 @@
     </developers>
 
     <scm>
-        <url>https://github.com/projectnessie/protobuf-maven-plugin</url>
-        <connection>scm:git:git://github.com/projectnessie/protobuf-maven-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/projectnessie/protobuf-maven-plugin.git</developerConnection>
+        <url>https://github.com/snazy/protobuf-maven-plugin</url>
+        <connection>scm:git:git://github.com/snazy/protobuf-maven-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/snazy/protobuf-maven-plugin.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -85,7 +85,7 @@
                 The actual site deployment is done by GitHub site-maven-plugin, so the URL here is not used.
             -->
             <id>gh-pages</id>
-            <url>https://github.com/projectnessie/protobuf-maven-plugin/tree/gh-pages</url>
+            <url>https://github.com/snazy/protobuf-maven-plugin/tree/gh-pages</url>
         </site>
         <repository>
             <id>ossrh</id>
@@ -95,7 +95,7 @@
 
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/projectnessie/protobuf-maven-plugin/issues/</url>
+        <url>https://github.com/snazy/protobuf-maven-plugin/issues/</url>
     </issueManagement>
 
     <build>

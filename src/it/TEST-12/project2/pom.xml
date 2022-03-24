@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.projectnessie.maven.plugins.protobuf.its</groupId>
+        <groupId>org.caffinitas.protobuf-maven.its</groupId>
         <artifactId>test-12-parent</artifactId>
         <version>1.0.0</version>
     </parent>
