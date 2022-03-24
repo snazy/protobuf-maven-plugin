@@ -1,6 +1,6 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/projectnessie/protobuf-maven-plugin/master/LICENSE)
 [![Build Status](https://github.com/snazy/protobuf-maven-plugin/actions/workflows/main.yml/badge.svg)](https://github.com/snazy/protobuf-maven-plugin/actions/workflows/main.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/org.caffinitas.protobuf-maven/protobuf-maven-plugin)](https://search.maven.org/artifact/org.caffinitas/protobuf-maven/protobuf-maven-plugin)
+[![Maven Central](https://img.shields.io/maven-central/v/org.caffinitas.protobuf-maven/protobuf-maven-plugin)](https://search.maven.org/artifact/org.caffinitas.protobuf-maven/protobuf-maven-plugin)
 
 # NOTE! This is a fork!
 
