@@ -1,0 +1,109 @@
+# Copyright (C) 2022 Robert Stupp
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+# Manually triggered workflow, takes the "release-version".
+
+# This workflow creates the git commits + git tag for a protobuf-maven release.
+# It requires a fully successful CI status of the commit going to be released, i.e. we rely on
+# the "Main CI" workflow here.
+
+# When this workflow pushes the release tag (e.g. `protobuf-maven-0.5.1`), the `release-publish.yml`
+# workflow publishes the release artifacts
+
+name: Create Release
+
+on:
+  # Manually triggered
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'The version to release - e.g. `0.5.0`'
+        required: true
+
+jobs:
+  create-release:
+    name: Create release
+    runs-on: ubuntu-latest
+    env:
+      GIT_TAG: protobuf-maven-${{ github.event.inputs.releaseVersion }}
+      RELEASE_VERSION: ${{ github.event.inputs.releaseVersion }}
+
+    steps:
+
+    # Check the given version parameter strings for valid version patterns and inequality.
+    - name: Check parameters
+      run: |
+        # check if tag matches patterns like protobuf-maven-0.5, protobuf-maven-0.10.4.3-alpha1, etc
+        if [[ ${RELEASE_VERSION} =~ ^[0-9]+[.][0-9.]*[0-9](-[a-zA-Z0-9]+)?$ ]]; then
+          echo "Parameter check OK"
+        else
+          echo "RELEASE_VERSION is not a valid release version ref is ${GITHUB_REF}."
+          exit 1
+        fi
+
+    # Check that the commit that is becoming a release has passed CI.
+    # Note: intentionally hard-coded snazy/protobuf-maven, so this check even works when *testing*
+    # the workflow on a PR-branch.
+    - name: Check commit status
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
+        gh api repos/snazy/protobuf-maven/commits/${GITHUB_SHA}/check-runs --jq 'if ([.check_runs[] | select(.name | endswith(" release") or startswith("codecov/") or startswith("Report ") | not ) | select(.conclusion != "skipped") | .conclusion // "pending" ] | unique == ["success"]) then "OK" else error("Commit checks are not OK") end'
+
+    ### BEGIN runner setup
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup Java, Maven, Gradle
+      uses: ./.github/actions/dev-tool-java
+    ### END runner setup
+
+    - name: Bump Maven release version ${{ github.event.inputs.releaseVersion }}
+      run: ./mvnw versions:set -DgenerateBackupPoms=false -DnewVersion=${RELEASE_VERSION}
+
+    - name: Configure release-bot-user in git config
+      run: |
+        git config --global user.email "protobuf-maven-release-workflow-noreply@caffinitas.org"
+        git config --global user.name "protobuf-maven Release Workflow [bot]"
+
+    # Record the release-version in git and add the git tag for the release.
+    - name: Record ${{ github.event.inputs.releaseVersion }} release in git
+      run: |
+        git commit -a -m "[release] release protobuf-maven-${RELEASE_VERSION}"
+        git tag -f ${GIT_TAG}
+
+    # Update versions in pom's to next development iteration
+    - name: Bump Maven next development version version
+      run: ./mvnw versions:set -DgenerateBackupPoms=false -DnextSnapshot=true
+
+    # Record the next development iteration in git
+    - name: Record next development version in git
+      run: git commit -a -m "[release] next development iteration"
+
+    # Push the 2 git commits and git tag. If this one fails, some other commit was pushed to the
+    # 'main' branch and break the linear history for the protobuf-maven git repo.
+    # The `release-publish.yml` job will run when the release tag `protobuf-maven-x.y.z` has been pushed.
+    - name: Push tag + branch
+      if: ${{ !env.ACT }}
+      run: |
+        # Push directly using the remote repo URL, which includes the secret so this job can push to the repo
+        UPSTREAM="https://${{ secrets.RELEASE_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
+
+        # Move the default auth settings in ~/.gitconfig out of the way, so the git-push can use the token
+        git config --rename-section http.https://github.com/ http.https://save.github.com/
+
+        git push --no-verify "${UPSTREAM}" HEAD:${GITHUB_REF}
+        git push --force --no-verify "${UPSTREAM}" HEAD:${GITHUB_REF} ${GIT_TAG}
+
+        # Move the default auth settings in ~/.gitconfig back
+        git config --rename-section http.https://save.github.com/ http.https://github.com/

@@ -20,7 +20,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.projectnessie.maven.plugins</groupId>
+    <groupId>org.caffinitas.protobuf-maven</groupId>
     <artifactId>protobuf-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>Maven Protocol Buffers Plugin</name>

@@ -41,7 +41,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.projectnessie.maven.plugins</groupId>
+                <groupId>org.caffinitas.protobuf-maven</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>@project.version@</version>
                 <executions>

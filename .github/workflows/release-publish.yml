@@ -1,0 +1,100 @@
+# Copyright (C) 2022 Robert Stupp
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Publish protobuf-maven release artifacts
+
+# Triggered when a `protobuf-maven-*` tag is being pushed.
+
+# Publishes the Maven, Python, Docker and Gradle-plugin artifacts.
+
+# GitHub environment name:
+#   release
+# Required secrets:
+#   OSSRH_ACCESS_ID
+#   OSSRH_TOKEN
+#   MAVEN_GPG_PASSPHRASE
+
+name: Publish release
+
+on:
+  push:
+    tags:
+      - protobuf-maven-*
+
+  workflow_dispatch:
+    inputs:
+      releaseTag:
+        description: 'Release tag name to re-release'
+        required: true
+
+jobs:
+  publish-release:
+    name: Publish release
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # GH doesn't provide just the tag name, so this step strips `/refs/tags/protobuf-maven-` from `GITHUB_REF`
+    # and provides the output `VERSION` or, in case of a manual run, uses the input `releaseTag` as
+    # the input tag name.
+    - name: Get release version
+      id: get_version
+      run: |
+        if [[ "${{ github.event_name }}" == "push" ]] ; then
+          V="${GITHUB_REF/refs\/tags\/}"
+        else
+          V="${{ github.event.inputs.releaseTag }}"
+        fi
+        # check if tag matches patterns like protobuf-maven-0.5, protobuf-maven-0.10.4.3-alpha1, etc
+        if [[ ${V} =~ ^protobuf-maven-[0-9]+[.][0-9.]*[0-9](-[a-zA-Z0-9]+)?$ ]]; then
+          echo ::set-output name=VERSION::${V/protobuf-maven-}
+        else
+          echo "Tag must start with protobuf-maven- followed by a valid version (got tag ${V}, ref is ${GITHUB_REF} )"
+          exit 1
+        fi
+
+    ### BEGIN runner setup
+    - name: Checkout
+      uses: actions/checkout@v2
+      if: ${{ github.event_name == 'push' }}
+      with:
+        fetch-depth: '0'
+    - name: Checkout
+      uses: actions/checkout@v2
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      with:
+        fetch-depth: '0'
+        ref: refs/tags/${{ github.event.inputs.releaseTag }}
+    - name: Setup Java, Maven, Gradle
+      uses: ./.github/actions/dev-tool-java
+      with:
+        gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+    ### END runner setup
+
+    # Deploys Maven artifacts. Build and test steps were already ran in previous steps.
+    # Not running tests, because the environment contains secrets.
+    - name: Publish Maven artifacts for release
+      id: build_maven
+      env:
+        RELEASE_VERSION: ${{ steps.get_version.outputs.VERSION }}
+        MAVEN_USERNAME: ${{ secrets.OSSRH_ACCESS_ID }}
+        MAVEN_OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+      run: |
+        NEXUS_ARGS="-DnexusUrl=https://oss.sonatype.org -DserverId=ossrh -DautoReleaseAfterClose=true"
+        PROFILES="-Prelease"
+        GOALS="install org.sonatype.plugins:nexus-staging-maven-plugin:1.6.8:deploy"
+        BUILD_ARGS="-DskipTests"
+
+        ./mvnw --batch-mode ${GOALS} ${PROFILES} ${NEXUS_ARGS} ${BUILD_ARGS}
