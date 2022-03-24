@@ -37,7 +37,7 @@ jobs:
     name: Create release
     runs-on: ubuntu-latest
     env:
-      GIT_TAG: protobuf-maven-${{ github.event.inputs.releaseVersion }}
+      GIT_TAG: protobuf-maven-plugin-${{ github.event.inputs.releaseVersion }}
       RELEASE_VERSION: ${{ github.event.inputs.releaseVersion }}
 
     steps:
@@ -45,7 +45,7 @@ jobs:
     # Check the given version parameter strings for valid version patterns and inequality.
     - name: Check parameters
       run: |
-        # check if tag matches patterns like protobuf-maven-0.5, protobuf-maven-0.10.4.3-alpha1, etc
+        # check if tag matches patterns like protobuf-maven-plugin-0.5, protobuf-maven-plugin-0.10.4.3-alpha1, etc
         if [[ ${RELEASE_VERSION} =~ ^[0-9]+[.][0-9.]*[0-9](-[a-zA-Z0-9]+)?$ ]]; then
           echo "Parameter check OK"
         else
