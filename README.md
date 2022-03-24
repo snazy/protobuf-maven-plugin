@@ -8,6 +8,18 @@ _**This is a fork of [xolstice/protobuf-maven-plugin](https://github.com/xolstic
 based on [this commit](https://github.com/xolstice/protobuf-maven-plugin/commit/fe8e6448dc6a5d58019b47a6fa7d348f8acd28e5)
 from August 2020 (the latest release 0.6.1 was in Oct 2018) of the forked repo with the following additions:
 
+## Since version 0.7.1
+ 
+* Invoke protoc and plugin binaries (like grpc) via `/bin/sh -c` to get around the issue that
+  parallel multi-module builds on Linux run into
+  `java.io.IOException: Cannot run program "...": error=26, Text file busy` errors. Background is
+  that Linux prevents executing (`fork`) another process while its binary file has an open file
+  descriptor for that file. This can happen when the binary file has just been written and also
+  already properly closed. The code itself is fine (copy the file, close the file, execute) though,
+  but practice proves that it doesn't always work.
+
+## Since version 0.7.0
+
 * Use shared repository for protobuf binaries to prevent a sporadic build failure on Linux when
   executing the `protoc` binary. The shared repository is located at the project's top level
   directory under `.mvn/protobuf-binaries`.
