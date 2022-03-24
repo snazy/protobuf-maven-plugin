@@ -76,7 +76,7 @@ jobs:
       with:
         fetch-depth: '0'
         ref: refs/tags/${{ github.event.inputs.releaseTag }}
-    - name: Setup Java, Maven, Gradle
+    - name: Setup Java, Maven
       uses: ./.github/actions/dev-tool-java
       with:
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}

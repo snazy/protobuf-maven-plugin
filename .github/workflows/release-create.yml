@@ -54,12 +54,12 @@ jobs:
         fi
 
     # Check that the commit that is becoming a release has passed CI.
-    # Note: intentionally hard-coded snazy/protobuf-maven, so this check even works when *testing*
+    # Note: intentionally hard-coded snazy/protobuf-maven-plugin, so this check even works when *testing*
     # the workflow on a PR-branch.
     - name: Check commit status
       run: |
         echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
-        gh api repos/snazy/protobuf-maven/commits/${GITHUB_SHA}/check-runs --jq 'if ([.check_runs[] | select(.name | endswith(" release") or startswith("codecov/") or startswith("Report ") | not ) | select(.conclusion != "skipped") | .conclusion // "pending" ] | unique == ["success"]) then "OK" else error("Commit checks are not OK") end'
+        gh api repos/snazy/protobuf-maven-plugin/commits/${GITHUB_SHA}/check-runs --jq 'if ([.check_runs[] | select(.name | endswith(" release") or startswith("codecov/") or startswith("Report ") | not ) | select(.conclusion != "skipped") | .conclusion // "pending" ] | unique == ["success"]) then "OK" else error("Commit checks are not OK") end'
 
     ### BEGIN runner setup
     - name: Checkout
