@@ -63,7 +63,7 @@ jobs:
 
     ### BEGIN runner setup
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Setup Java, Maven, Gradle
       uses: ./.github/actions/dev-tool-java
     ### END runner setup
@@ -94,7 +94,6 @@ jobs:
     # 'main' branch and break the linear history for the protobuf-maven git repo.
     # The `release-publish.yml` job will run when the release tag `protobuf-maven-x.y.z` has been pushed.
     - name: Push tag + branch
-      if: ${{ !env.ACT }}
       run: |
         # Push directly using the remote repo URL, which includes the secret so this job can push to the repo
         UPSTREAM="https://${{ secrets.RELEASE_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
