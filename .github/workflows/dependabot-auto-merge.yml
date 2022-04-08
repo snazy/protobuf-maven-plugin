@@ -47,11 +47,18 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
             const pullRequest = context.payload.workflow_run.pull_requests[0]
+            const repository = context.repo
+            const pullRequestDetails = github.rest.pulls.get({
+              owner: repository.owner,
+              repo: repository.repo,
+              pull_number: pullRequest.number,
+            })
+            
             console.log("PR Number: " + pullRequest.number)
-            console.log("PR URL: " + pullRequest.html_url)
             console.log("PR head SHA: " + pullRequest.head.sha)
-            console.log("PR Title: " + pullRequest.title)
-            console.log("PR Body: " + pullRequest.body)
+            console.log("PR head ref: " + pullRequest.head.ref)
+            console.log("PR URL: " + pullRequestDetails.html_url)
+            console.log(pullRequestDetails)
 
       - name: Check commit status
         run: |
