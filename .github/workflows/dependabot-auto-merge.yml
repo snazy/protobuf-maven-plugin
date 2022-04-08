@@ -48,7 +48,7 @@ jobs:
           script: |
             const pullRequest = context.payload.workflow_run.pull_requests[0]
             const repository = context.repo
-            const pullRequestDetails = github.rest.pulls.get({
+            const pullRequestDetails = await github.rest.pulls.get({
               owner: repository.owner,
               repo: repository.repo,
               pull_number: pullRequest.number,
