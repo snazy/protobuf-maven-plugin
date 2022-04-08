@@ -47,8 +47,11 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           script: |
             const pullRequest = context.payload.workflow_run.pull_requests[0]
+            console.log("PR Number: " + pullRequest.number)
+            console.log("PR URL: " + pullRequest.html_url)
+            console.log("PR head SHA: " + pullRequest.head.sha)
             console.log("PR Title: " + pullRequest.title)
-            console.log("PR URL: " + pullRequest.url)
+            console.log("PR Body: " + pullRequest.body)
 
       - name: Check commit status
         run: |
@@ -68,7 +71,7 @@ jobs:
               owner: repository.owner,
               repo: repository.repo,
               pull_number: pullRequest.number,
-              commit_id: "${{ github.event.workflow_run.head_commit.id }}"
+              commit_id: pullRequest.head.sha,
             })
 
       - name: "Merge pull request"
@@ -84,5 +87,5 @@ jobs:
               owner: repository.owner,
               pull_number: pullRequest.number,
               repo: repository.repo,
-              sha: "${{ github.event.workflow_run.head_commit.id }}"
+              sha: pullRequest.head.sha,
             })
